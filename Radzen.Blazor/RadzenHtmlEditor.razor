@@ -50,11 +50,14 @@
                 <RadzenHtmlEditorFormatBlock />
                 <RadzenHtmlEditorSeparator />
                 <RadzenHtmlEditorSource />
+                <RadzenHtmlEditorMarkdownToggle />
             }
             </CascadingValue>
         </div>
         }
         <RadzenTextArea @ref=@TextArea spellcheck="false" Visible=@(mode == HtmlEditorMode.Source) class="rz-html-editor-source" Value=@Html Change=@SourceChanged />
+        <RadzenTextArea @ref=@MarkdownTextArea spellcheck="false" Visible=@(mode == HtmlEditorMode.Markdown) class="rz-html-editor-markdown" Value=@Markdown Change=@MarkdownChanged />
         <div hidden="@(mode != HtmlEditorMode.Design)" @ref=@ContentEditable class="rz-html-editor-content" contenteditable=@(!Disabled) @onfocus=@OnFocus @onblur=@OnBlur></div>
+        <div hidden="@(mode != HtmlEditorMode.Markdown)" class="rz-html-editor-markdown-content" @bind=@RenderedMarkdown></div>
     </div>
 }

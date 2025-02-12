@@ -119,6 +119,7 @@ namespace Radzen.Blazor
 
         ElementReference ContentEditable { get; set; }
         RadzenTextArea TextArea { get; set; }
+        RadzenTextArea MarkdownTextArea { get; set; }
 
         /// <summary>
         /// Focuses the editor.
@@ -130,9 +131,13 @@ namespace Radzen.Blazor
             {
                 return ContentEditable.FocusAsync();
             }
-            else
+            else if (mode == HtmlEditorMode.Source)
             {
                 return TextArea.Element.FocusAsync();
+            }
+            else
+            {
+                return MarkdownTextArea.Element.FocusAsync();
             }
         }
 
@@ -189,17 +194,27 @@ namespace Radzen.Blazor
         /// <param name="value">The value.</param>
         public async Task ExecuteCommandAsync(string name, string value = null)
         {
-            State = await JSRuntime.InvokeAsync<RadzenHtmlEditorCommandState>("Radzen.execCommand", ContentEditable, name, value);
-
-            await OnExecuteAsync(name);
-
-            if (Html != State.Html)
+            if (mode == HtmlEditorMode.Markdown)
             {
-                Html = State.Html;
+                // Handle Markdown mode commands here
+                // For now, we can just update the Markdown content
+                Markdown = value;
+                RenderedMarkdown = ConvertMarkdownToHtml(Markdown);
+            }
+            else
+            {
+                State = await JSRuntime.InvokeAsync<RadzenHtmlEditorCommandState>("Radzen.execCommand", ContentEditable, name, value);
 
-                htmlChanged = true;
+                await OnExecuteAsync(name);
 
-                await OnChange();
+                if (Html != State.Html)
+                {
+                    Html = State.Html;
+
+                    htmlChanged = true;
+
+                    await OnChange();
+                }
             }
         }
 
@@ -229,22 +244,34 @@ namespace Radzen.Blazor
             StateHasChanged();
         }
 
+        private async Task MarkdownChanged(string markdown)
+        {
+            if (Markdown != markdown)
+            {
+                Markdown = markdown;
+                RenderedMarkdown = ConvertMarkdownToHtml(Markdown);
+                htmlChanged = true;
+            }
+            await OnChange();
+            StateHasChanged();
+        }
+
         async Task OnChange()
         {
             if (htmlChanged)
             {
                 htmlChanged = false;
 
-                _value = Html;
+                _value = mode == HtmlEditorMode.Markdown ? Markdown : Html;
 
-                await ValueChanged.InvokeAsync(Html);
+                await ValueChanged.InvokeAsync(_value);
 
                 if (FieldIdentifier.FieldName != null)
                 {
                     EditContext?.NotifyFieldChanged(FieldIdentifier);
                 }
 
-                await Change.InvokeAsync(Html);
+                await Change.InvokeAsync(_value);
             }
         }
 
@@ -338,6 +365,8 @@ namespace Radzen.Blazor
         }
 
         string Html { get; set; }
+        string Markdown { get; set; }
+        string RenderedMarkdown { get; set; }
 
         /// <inheritdoc />
         protected override void OnInitialized()
@@ -453,6 +482,13 @@ namespace Radzen.Blazor
             }
 
             await UploadComplete.InvokeAsync(new UploadCompleteEventArgs() { RawResponse = response, JsonResponse = doc });
+        }
+
+        private string ConvertMarkdownToHtml(string markdown)
+        {
+            // Implement the logic to convert Markdown to HTML
+            // For now, we can use a simple placeholder implementation
+            return $"<p>{markdown}</p>";
         }
     }
 }

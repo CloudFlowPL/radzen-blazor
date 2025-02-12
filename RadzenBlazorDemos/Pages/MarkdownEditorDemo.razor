@@ -1,0 +1,69 @@
+@page "/markdown-editor-demo"
+
+@using Radzen
+@using Radzen.Blazor
+
+<h3>Markdown Editor Demo</h3>
+
+<RadzenHtmlEditor @bind-Value=@markdownContent Mode="HtmlEditorMode.Markdown">
+    <RadzenHtmlEditorBold />
+    <RadzenHtmlEditorItalic />
+    <RadzenHtmlEditorUnderline />
+    <RadzenHtmlEditorStrikeThrough />
+    <RadzenHtmlEditorSeparator />
+    <RadzenHtmlEditorAlignLeft />
+    <RadzenHtmlEditorAlignCenter />
+    <RadzenHtmlEditorAlignRight />
+    <RadzenHtmlEditorJustify />
+    <RadzenHtmlEditorSeparator />
+    <RadzenHtmlEditorIndent />
+    <RadzenHtmlEditorOutdent />
+    <RadzenHtmlEditorUnorderedList />
+    <RadzenHtmlEditorOrderedList />
+    <RadzenHtmlEditorSeparator />
+    <RadzenHtmlEditorColor />
+    <RadzenHtmlEditorBackground />
+    <RadzenHtmlEditorRemoveFormat />
+    <RadzenHtmlEditorSeparator />
+    <RadzenHtmlEditorSubscript />
+    <RadzenHtmlEditorSuperscript />
+    <RadzenHtmlEditorSeparator />
+    <RadzenHtmlEditorLink />
+    <RadzenHtmlEditorUnlink />
+    <RadzenHtmlEditorImage />
+    <RadzenHtmlEditorFontName />
+    <RadzenHtmlEditorFontSize />
+    <RadzenHtmlEditorFormatBlock />
+    <RadzenHtmlEditorSeparator />
+    <RadzenHtmlEditorSource />
+</RadzenHtmlEditor>
+
+<RadzenTextArea @bind-Value=@markdownContent Rows="10" Style="width: 100%;" />
+
+<div>
+    <h4>Rendered Markdown</h4>
+    <div>@((MarkupString)renderedMarkdownContent)</div>
+</div>
+
+@code {
+    private string markdownContent = "# Hello, Markdown!";
+    private string renderedMarkdownContent;
+
+    protected override void OnInitialized()
+    {
+        renderedMarkdownContent = ConvertMarkdownToHtml(markdownContent);
+    }
+
+    private void OnMarkdownContentChanged(string newContent)
+    {
+        markdownContent = newContent;
+        renderedMarkdownContent = ConvertMarkdownToHtml(markdownContent);
+    }
+
+    private string ConvertMarkdownToHtml(string markdown)
+    {
+        // Implement the logic to convert Markdown to HTML
+        // For now, we can use a simple placeholder implementation
+        return $"<p>{markdown}</p>";
+    }
+}
