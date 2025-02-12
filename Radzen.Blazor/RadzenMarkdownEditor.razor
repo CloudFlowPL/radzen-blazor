@@ -1,0 +1,39 @@
+@using Radzen
+@using Radzen.Blazor
+@using Radzen.Blazor.Rendering
+@using Microsoft.JSInterop
+@inherits FormComponent<string>
+
+@if(Visible)
+{
+    <div @ref=Element style=@Style @attributes=@Attributes class=@GetCssClass() id=@GetId()>
+        @if (ShowToolbar)
+        {
+        <div class="rz-markdown-editor-toolbar">
+            <CascadingValue Value=@this>
+            @if (ChildContent != null)
+            {
+                @ChildContent
+            }
+            else
+            {
+                <RadzenMarkdownEditorBold />
+                <RadzenMarkdownEditorItalic />
+                <RadzenMarkdownEditorUnderline />
+                <RadzenMarkdownEditorStrikeThrough />
+                <RadzenMarkdownEditorSeparator />
+                <RadzenMarkdownEditorUnorderedList />
+                <RadzenMarkdownEditorOrderedList />
+                <RadzenMarkdownEditorSeparator />
+                <RadzenMarkdownEditorLink />
+                <RadzenMarkdownEditorImage />
+                <RadzenMarkdownEditorSeparator />
+                <RadzenMarkdownEditorSource />
+            }
+            </CascadingValue>
+        </div>
+        }
+        <RadzenTextArea @ref=@TextArea spellcheck="false" Visible=@(mode == MarkdownEditorMode.Source) class="rz-markdown-editor-source" Value=@Markdown Change=@SourceChanged />
+        <div hidden="@(mode != MarkdownEditorMode.Preview)" @ref=@ContentEditable class="rz-markdown-editor-content" contenteditable=@(!Disabled) @onfocus=@OnFocus @onblur=@OnBlur></div>
+    </div>
+}
